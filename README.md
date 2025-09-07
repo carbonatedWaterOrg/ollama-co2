@@ -36,7 +36,7 @@ A few to choose from.
 
 ```bash
 # Clone the project into your current directory
-git clone https://github.com/carbonatedWaterOrg/ollamaCO2 .
+git clone https://github.com/carbonatedWaterOrg/ollama-co2 .
 
 # Create required .env file
 echo "OLLAMA_BASE_URL=http://your-ollama-server:11434" > .env
