@@ -8,6 +8,7 @@ from datetime import datetime
 import json
 import os
 from dotenv import load_dotenv
+import logging
 
 load_dotenv()
 
@@ -19,7 +20,11 @@ app = FastAPI(title="Ollama CO₂ - Everything is better carbonated")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
-active_downloads = {}
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("ollama-co2")
+
+active_downloads = {}  # Track active downloads globally
 
 @app.get("/", response_class=HTMLResponse)
 async def ollama_monitor(request: Request):
@@ -162,6 +167,12 @@ async def pull_model_api(request: Request):
 @app.get("/api/ollama/pull/active")
 async def get_active_downloads():
     """Get all active downloads with their progress"""
+    global active_downloads  # Ensure the variable is accessible
+    logger.info("Fetching active downloads...")
+    logger.info(f"Current active downloads: {active_downloads}")
+    if not active_downloads:
+        logger.warning("No active downloads found.")
+        return {"success": False, "error": "No active downloads found."}
     return {"success": True, "downloads": active_downloads}
 
 @app.get("/api/ollama/pull/{model_name}/progress")
