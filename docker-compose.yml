@@ -1,0 +1,14 @@
+networks:
+  aibase_aibase:
+    external: true
+services:
+  ollama-co2:
+    build: .
+    container_name: ollama-co2
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    restart: unless-stopped
+    networks:
+      - aibase_aibase

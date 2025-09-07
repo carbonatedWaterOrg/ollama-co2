@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ollama CO2</title>
+    
+    <!-- Favicons -->
+    <link rel="icon" href="/static/favicon.ico" sizes="any">
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
+    <link rel="manifest" href="/static/site.webmanifest">
+    
+    <link href="{{ url_for('static', path='tailwind.css') }}" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Carbonated Theme */
+        .carbonated-gradient {
+            background: linear-gradient(135deg, #0d9488 0%, #14b8a6 50%, #2dd4bf 100%);
+        }
+        
+        .fizzy-glow {
+            box-shadow: 0 0 20px rgba(20, 184, 166, 0.3);
+        }
+        
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(45, 212, 191, 0.25);
+        }
+        
+        .dark .glass-effect {
+            background: rgba(31, 41, 55, 0.95);
+            border: 1px solid rgba(45, 212, 191, 0.2);
+        }
+        
+        /* Modern Minimal Theme - Inspired by Ollama */
+        .bw-theme {
+            background: #fafafa;
+            color: #1a1a1a;
+        }
+        
+        .bw-theme body {
+            background: #fafafa !important;
+        }
+        
+        .bw-theme .glass-effect {
+            background: #ffffff !important;
+            border: 1px solid #e5e7eb !important;
+            backdrop-filter: none !important;
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1) !important;
+            border-radius: 8px !important;
+        }
+        
+        .bw-theme .carbonated-gradient {
+            background: #1a1a1a !important;
+            color: #ffffff !important;
+        }
+        
+        .bw-theme .fizzy-glow {
+            box-shadow: none !important;
+        }
+        
+        .bw-theme * {
+            color: #1a1a1a !important;
+        }
+        
+        .bw-theme .text-slate-700,
+        .bw-theme .text-slate-800,
+        .bw-theme .text-carbonated-200 {
+            color: #1a1a1a !important;
+        }
+        
+        .bw-theme .text-slate-600,
+        .bw-theme .text-carbonated-300 {
+            color: #6b7280 !important;
+        }
+        
+        .bw-theme .text-emerald-500,
+        .bw-theme .text-emerald-600,
+        .bw-theme .text-carbonated-500,
+        .bw-theme .text-carbonated-600 {
+            color: #1a1a1a !important;
+        }
+        
+        .bw-theme .carbonated-gradient,
+        .bw-theme .carbonated-gradient * {
+            color: #ffffff !important;
+        }
+        
+        
+        /* Simplify details popups in black and white theme */
+        .bw-theme #modelModal {
+            background: rgba(0, 0, 0, 0.5) !important;
+        }
+        
+        .bw-theme #modelModal .glass-effect {
+            background: #ffffff !important;
+            border: 2px solid #000000 !important;
+            backdrop-filter: none !important;
+            box-shadow: none !important;
+            border-radius: 4px !important;
+        }
+        
+        .bw-theme #modelModal * {
+            color: #000000 !important;
+        }
+        
+        .bw-theme #modelModal .border-b {
+            border-color: #000000 !important;
+        }
+        
+        .bw-theme #modelModal .fizzy-glow {
+            box-shadow: none !important;
+        }
+        
+        .bw-theme #modelModal .fas {
+            color: #000000 !important;
+        }
+        
+        /* Standardize popup content for all themes */
+        #modelModal .space-y-6 > div {
+            margin-bottom: 2rem !important;
+            padding-bottom: 1rem !important;
+            border-bottom: 1px solid rgba(0,0,0,0.1) !important;
+        }
+        
+        #modelModal .space-y-6 > div:last-child {
+            border-bottom: none !important;
+        }
+        
+        /* Light theme popup standardization */
+        #modelModal h4 {
+            font-size: 1rem !important;
+            font-weight: 600 !important;
+            color: #374151 !important;
+            margin-bottom: 0.5rem !important;
+        }
+        
+        #modelModal .text-sm,
+        #modelModal .text-xs,
+        #modelModal pre {
+            font-size: 0.875rem !important;
+            color: #374151 !important;
+        }
+        
+        #modelModal .bg-green-100,
+        #modelModal .bg-blue-100,
+        #modelModal .bg-purple-100,
+        #modelModal .bg-gray-100 {
+            background-color: #f9fafb !important;
+            border: 1px solid #e5e7eb !important;
+            padding: 0.75rem !important;
+        }
+        
+        #modelModal .border-l-4 {
+            border-left: 3px solid #6b7280 !important;
+        }
+        
+        /* Dark theme popup standardization */
+        .dark #modelModal h4 {
+            color: #d1d5db !important;
+        }
+        
+        .dark #modelModal .text-sm,
+        .dark #modelModal .text-xs,
+        .dark #modelModal pre {
+            color: #d1d5db !important;
+        }
+        
+        .dark #modelModal .bg-green-100,
+        .dark #modelModal .bg-blue-100,
+        .dark #modelModal .bg-purple-100,
+        .dark #modelModal .bg-gray-100,
+        .dark #modelModal .bg-green-900\/30,
+        .dark #modelModal .bg-blue-900\/30,
+        .dark #modelModal .bg-purple-900\/30,
+        .dark #modelModal .bg-gray-800\/50 {
+            background-color: #374151 !important;
+            border: 1px solid #4b5563 !important;
+        }
+        
+        .dark #modelModal .space-y-6 > div {
+            border-bottom-color: rgba(255,255,255,0.1) !important;
+        }
+        
+        /* Ensure better text contrast in dark theme modal */
+        .dark #modelModal {
+            color: #f1f5f9 !important;
+        }
+        
+        .dark #modelModal .text-slate-700 {
+            color: #e2e8f0 !important;
+        }
+        
+    </style>
+</head>
+
+<body class="bg-slate-200 dark:bg-gray-900 min-h-screen transition-colors duration-200 relative">
+    <header class="glass-effect border-b border-carbonated-200/30 dark:border-carbonated-800/30 transition-colors duration-200 relative">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <img src="/static/favicon.svg" alt="Ollama CO₂" class="mr-3 w-8 h-8 rounded-lg fizzy-glow">
+                    <h1 class="text-2xl font-bold text-slate-800 dark:text-carbonated-200">Ollama CO<sub>2</sub></h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-slate-700 dark:text-carbonated-300 font-medium">everything is better carbonated</span>
+                    <button id="themeToggle" class="p-2 rounded-lg glass-effect hover:bg-carbonated-100/20 dark:hover:bg-carbonated-800/20 transition-colors duration-200">
+                        <i id="themeIcon" class="fas fa-moon text-slate-700 dark:text-carbonated-300"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 py-8">
+        <!-- Status Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+            <!-- Connection Status -->
+            <div class="glass-effect rounded-2xl p-6 transition-colors duration-200 relative fizzy-glow hover:scale-105 hover:rotate-1 transform transition-transform">
+                <div class="flex items-center">
+                    <div
+                        class="p-3 rounded-full {% if ollama_status.status == 'online' %}bg-emerald-100 dark:bg-emerald-900/30{% elif ollama_status.status == 'offline' %}bg-red-100 dark:bg-red-900/30{% else %}bg-amber-100 dark:bg-amber-900/30{% endif %}">
+                        <i class="fas fa-server text-slate-700 dark:text-carbonated-300 text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="text-lg font-semibold text-slate-800 dark:text-carbonated-200">Server Status</h3>
+                        <p id="server-status-text" class="text-lg font-semibold {% if ollama_status.status == 'online' %}text-emerald-600 dark:text-emerald-400{% elif ollama_status.status == 'offline' %}text-red-600 dark:text-red-400{% else %}text-amber-600 dark:text-amber-400{% endif %}">{{ ollama_status.status.title() }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Available Models Count -->
+            <div class="glass-effect rounded-2xl p-6 transition-colors duration-200 relative fizzy-glow hover:scale-105 hover:-rotate-1 transform transition-transform">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-carbonated-100 dark:bg-carbonated-900/30">
+                        <i class="fas fa-database text-slate-700 dark:text-carbonated-300 text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="text-lg font-semibold text-slate-800 dark:text-carbonated-200">Available Models</h3>
+                        <p id="available-models-count" class="text-lg font-semibold text-carbonated-600 dark:text-carbonated-400">{{ ollama_status.available_models|length }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loaded Models Count -->
+            <div class="glass-effect rounded-2xl p-6 transition-colors duration-200 relative fizzy-glow hover:scale-105 hover:rotate-1 transform transition-transform">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-emerald-100 dark:bg-emerald-900/30">
+                        <i class="fas fa-memory text-slate-700 dark:text-carbonated-300 text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="text-lg font-semibold text-slate-800 dark:text-carbonated-200">Loaded Models</h3>
+                        <p id="loaded-models-count" class="text-lg font-semibold text-emerald-600 dark:text-emerald-400">{{ ollama_status.loaded_models|length }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Last Updated -->
+            <div class="glass-effect rounded-2xl p-6 transition-colors duration-200 relative fizzy-glow hover:scale-105 hover:-rotate-1 transform transition-transform">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-cyan-100 dark:bg-cyan-900/30">
+                        <i class="fas fa-clock text-slate-700 dark:text-carbonated-300 text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="text-lg font-semibold text-slate-800 dark:text-carbonated-200">Last Updated</h3>
+                        <p class="text-lg font-semibold text-cyan-600 dark:text-cyan-400">{{ timestamp }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Connection Details -->
+        {% if ollama_status.error %}
+        <div class="glass-effect bg-red-50/50 dark:bg-red-900/20 border border-red-200/50 dark:border-red-700/50 rounded-2xl p-4 mb-6 transition-colors duration-200 fizzy-glow">
+            <div class="flex">
+                <i class="fas fa-flask-vial text-red-500 mr-3 mt-1"></i>
+                <div>
+                    <h3 class="text-red-800 dark:text-red-300 font-medium">Connection Error</h3>
+                    <p class="text-red-700 dark:text-red-400 text-sm mt-1">{{ ollama_status.error }}</p>
+                    <p class="text-red-600 dark:text-red-500 text-xs mt-2">Trying to connect to: http://ollama:11434</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Ollama Parameters Configuration -->
+        <div class="glass-effect rounded-2xl mb-6 transition-colors duration-200 fizzy-glow relative">
+            <div class="p-6 border-b border-slate-300/40 dark:border-carbonated-700/30">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h3 class="text-lg font-semibold text-slate-800 dark:text-carbonated-200">Model Loading Configuration</h3>
+                        <p class="text-sm text-slate-700 dark:text-carbonated-300 mt-1">Configure how models are loaded into memory and how long they stay loaded
+                        </p>
+                    </div>
+                    <button onclick="toggleParameters()" id="paramToggleBtn"
+                        class="carbonated-gradient hover:scale-105 text-white px-4 py-2 rounded-lg transform transition-all duration-200 fizzy-glow">
+                        <i class="fas fa-cog mr-2"></i>Show Parameters
+                    </button>
+                </div>
+            </div>
+            <div id="parameterSection" class="p-6 border-b border-gray-200 dark:border-gray-700 hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Context Length -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Context Length</label>
+                        <input type="number" id="num_ctx" value="4096" min="512" max="32768" step="512"
+                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:focus:ring-blue-400">
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Size of context window - affects VRAM usage when loading
+                        </p>
+                    </div>
+
+                    <!-- Keep Alive -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Keep Alive</label>
+                        <select id="keep_alive"
+                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:focus:ring-blue-400">
+                            <option value="5m">5 minutes</option>
+                            <option value="10m">10 minutes</option>
+                            <option value="30m">30 minutes</option>
+                            <option value="1h">1 hour</option>
+                            <option value="4h">4 hours</option>
+                            <option value="24h">24 hours</option>
+                            <option value="-1m">Keep indefinitely</option>
+                            <option value="0">Unload immediately</option>
+                        </select>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">How long to keep model in memory</p>
+                    </div>
+                </div>
+
+                <!-- Information Box about Per-Request Parameters -->
+                <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div class="flex items-start">
+                        <i class="fas fa-info-circle text-blue-500 mt-0.5 mr-2"></i>
+                        <div class="text-sm text-blue-700">
+                            <p class="font-medium mb-1">Other Parameters (Temperature, Top-K, Top-P, etc.)</p>
+                            <p>Generation parameters like temperature, top_k, top_p, repeat_penalty, etc. are applied
+                                <strong>per-request</strong> when generating text, not when loading the model. You can
+                                set these when making API calls to <code>/api/generate</code>.</p>
+                            <p class="mt-2 text-xs">The parameters shown above affect how the model is loaded into
+                                memory and how long it stays loaded.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex justify-between items-center">
+                    <div class="flex space-x-4">
+                        <button onclick="resetToDefaults()"
+                            class="bg-gray-500 hover:bg-gray-600 dark:bg-gray-600 dark:hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors duration-200">
+                            <i class="fas fa-undo mr-2"></i>Reset to Defaults
+                        </button>
+                        <button onclick="saveParameterPreset()"
+                            class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
+                            <i class="fas fa-save mr-2"></i>Save Parameters
+                        </button>
+                    </div>
+                    <div class="text-sm text-gray-600 dark:text-gray-300">
+                        <i class="fas fa-info-circle mr-1"></i>Parameters will be applied when loading models
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pull New Models -->
+        <div class="glass-effect rounded-2xl transition-colors duration-200 mb-6 fizzy-glow relative">
+            <div class="p-6 border-b border-slate-300/40 dark:border-carbonated-700/30">
+                <h3 class="text-lg font-semibold text-slate-800 dark:text-carbonated-200">Pull New Models</h3>
+                <p class="text-sm text-slate-700 dark:text-carbonated-300 mt-1">Download models from the Ollama registry using the same names you
+                    would use with <code class="bg-slate-300/60 dark:bg-carbonated-800/50 px-1 rounded">ollama pull</code></p>
+            </div>
+            <div class="p-6">
+                <div class="flex space-x-4">
+                    <div class="flex-1">
+                        <input type="text" id="modelName" placeholder="Enter model name (e.g., gpt-oss:20b)"
+                            class="w-full px-4 py-2 border border-slate-400 dark:border-carbonated-600 rounded-lg focus:ring-2 focus:ring-carbonated-500 focus:border-transparent glass-effect">
+                    </div>
+                    <button onclick="pullModel()"
+                        class="carbonated-gradient hover:scale-105 text-white px-6 py-2 rounded-lg transform transition-all duration-200 fizzy-glow">
+                        <i class="fas fa-download mr-2"></i>Pull Model
+                    </button>
+                </div>
+                <!-- Downloads Progress Section -->
+                <div id="downloadsContainer" class="mt-4 space-y-3"></div>
+            </div>
+        </div>
+
+        <!-- Loaded Models -->
+        {% if ollama_status.loaded_models %}
+        <div class="glass-effect rounded-2xl transition-colors duration-200 mb-6 fizzy-glow relative">
+            <div class="p-6 border-b border-slate-300/40 dark:border-carbonated-700/30">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-semibold text-slate-800 dark:text-carbonated-200">Currently Loaded Models</h3>
+                    <div class="flex items-center space-x-2">
+                        <span class="bg-emerald-100 text-emerald-800 px-2 py-1 rounded-full text-xs font-medium">
+                            <i class="fas fa-circle text-emerald-500 mr-1"></i>{{ ollama_status.loaded_models|length }}
+                            Active
+                        </span>
+                        <button onclick="refreshModelData()"
+                            class="carbonated-gradient hover:scale-105 text-white px-4 py-2 rounded-lg transform transition-all duration-200 fizzy-glow">
+                            <i class="fas fa-sync-alt mr-2"></i>Refresh
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-carbonated-50 dark:bg-carbonated-900/20">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                Model Name</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                VRAM Usage</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                Context Length</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                Expires At</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="glass-effect divide-y divide-carbonated-200/30 dark:divide-carbonated-700/30">
+                        {% for model in ollama_status.loaded_models %}
+                        <tr class="bg-green-50 dark:bg-green-900/20 bg-opacity-30">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-play text-green-600"></i>
+                                    </div>
+                                    <div class="ml-4">
+                                        <div class="text-sm font-medium text-gray-900 dark:text-white">{{ model.name }}</div>
+                                        <div class="text-xs text-green-600 font-medium">LOADED</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                {{ (model.size_vram / 1024 / 1024 / 1024) | round(2) }} GB
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                {{ model.context_length if model.context_length else 'N/A' }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                {{ model.expires_at[:19].replace('T', ' ') if model.expires_at and model.expires_at[:4]
+                                != '2317' else 'No expiry' }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <button onclick="showModelDetails('{{ model.name }}')"
+                                    class="text-blue-600 hover:text-blue-900 mr-3">Details</button>
+                                <button onclick="unloadModel('{{ model.name }}')"
+                                    class="text-red-600 hover:text-red-900">Unload</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Available Models -->
+        {% if ollama_status.available_models %}
+        <div class="glass-effect rounded-2xl transition-colors duration-200 mb-6 fizzy-glow relative">
+            <div class="p-6 border-b border-slate-300/40 dark:border-carbonated-700/30">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-semibold text-slate-800 dark:text-carbonated-200">Available Models</h3>
+                    <span class="bg-slate-300 dark:bg-carbonated-700 text-slate-800 dark:text-carbonated-200 px-2 py-1 rounded-full text-xs font-medium">
+                        {{ ollama_status.available_models|length }} Total
+                    </span>
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50 dark:bg-gray-900">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                Model Name</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                Size</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                Modified</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="glass-effect divide-y divide-carbonated-200/30 dark:divide-carbonated-700/30">
+                        {% for model in ollama_status.available_models %}
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    {% set is_loaded = model.name in (ollama_status.loaded_models |
+                                    map(attribute='name') | list) %}
+                                    <div
+                                        class="w-10 h-10 {% if is_loaded %}bg-green-100{% else %}bg-gray-100 dark:bg-gray-700{% endif %} rounded-full flex items-center justify-center">
+                                        <i
+                                            class="fas {% if is_loaded %}fa-play text-green-600{% else %}fa-pause text-gray-600 dark:text-gray-300{% endif %}"></i>
+                                    </div>
+                                    <div class="ml-4">
+                                        <div class="text-sm font-medium text-gray-900 dark:text-white">{{ model.name }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                {{ (model.size / 1024 / 1024 / 1024) | round(2) }} GB
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                {% set is_loaded = model.name in (ollama_status.loaded_models | map(attribute='name') |
+                                list) %}
+                                {% if is_loaded %}
+                                <span
+                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    <i class="fas fa-circle text-green-500 mr-1"></i>Loaded
+                                </span>
+                                {% else %}
+                                <span
+                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white">
+                                    <i class="fas fa-circle text-gray-500 dark:text-gray-400 mr-1"></i>Available
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                {{ model.modified_at[:10] if model.modified_at else 'Unknown' }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <button onclick="showModelDetails('{{ model.name }}')"
+                                    class="text-blue-600 hover:text-blue-900 mr-3">Details</button>
+                                {% set is_loaded = model.name in (ollama_status.loaded_models | map(attribute='name') |
+                                list) %}
+                                {% if is_loaded %}
+                                <button onclick="unloadModel('{{ model.name }}')"
+                                    class="text-red-600 hover:text-red-900 mr-3">Unload</button>
+                                {% else %}
+                                <button onclick="loadModel('{{ model.name }}')"
+                                    class="text-green-600 hover:text-green-900 mr-3">Load</button>
+                                {% endif %}
+                                <button onclick="deleteModel('{{ model.name }}')"
+                                    class="text-red-600 hover:text-red-900 font-medium">
+                                    <i class="fas fa-trash mr-1"></i>Delete
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+
+
+    </main>
+
+    <!-- Loading Modal -->
+    <div id="loadingModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="glass-effect rounded-2xl p-8 max-w-md w-full mx-4 transition-colors duration-200 fizzy-glow relative">
+            <div class="flex flex-col items-center text-center">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-4"></div>
+                <h3 class="text-xl font-semibold text-gray-800 dark:text-white mb-2">Please Wait</h3>
+                <p id="loadingText" class="text-gray-600 dark:text-gray-300">Loading...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Modal -->
+    <div id="statusModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="glass-effect rounded-2xl p-8 max-w-md w-full mx-4 transition-colors duration-200 fizzy-glow relative">
+            <div class="flex flex-col items-center text-center">
+                <div id="statusIconContainer" class="w-16 h-16 rounded-full flex items-center justify-center mb-4">
+                    <i id="statusIcon" class="text-3xl"></i>
+                </div>
+                <h3 id="statusTitle" class="text-xl font-semibold text-gray-800 dark:text-white mb-2">Notification</h3>
+                <p id="statusText" class="text-gray-600 dark:text-gray-300 mb-6"></p>
+                <button id="statusModalClose" 
+                        class="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="glass-effect rounded-2xl p-8 max-w-md w-full mx-4 transition-colors duration-200 fizzy-glow relative">
+            <div class="flex flex-col items-center text-center">
+                <div class="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mb-4">
+                    <i class="fas fa-exclamation-triangle text-red-500 text-3xl"></i>
+                </div>
+                <h3 id="confirmTitle" class="text-xl font-semibold text-gray-800 dark:text-white mb-2">Confirm Action</h3>
+                <p id="confirmMessage" class="text-gray-600 dark:text-gray-300 mb-6 whitespace-pre-line"></p>
+                <div class="flex space-x-3 w-full">
+                    <button id="confirmCancel" 
+                            class="flex-1 px-6 py-2 bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                        Cancel
+                    </button>
+                    <button id="confirmOk" 
+                            class="flex-1 px-6 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                        Confirm
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Model Details Modal -->
+    <div id="modelModal" class="fixed inset-0 bg-slate-900/80 dark:bg-slate-900/90 backdrop-blur-sm hidden items-center justify-center z-50">
+        <div class="glass-effect rounded-2xl max-w-4xl w-full m-4 max-h-[80vh] overflow-y-auto transition-colors duration-200 fizzy-glow relative">
+            <div class="p-6 border-b border-slate-300/40 dark:border-carbonated-700/30">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-semibold text-slate-800 dark:text-carbonated-200" id="modalTitle">Model Details</h3>
+                    <button onclick="closeModal()" class="text-slate-600 hover:text-slate-800 dark:text-carbonated-300">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6">
+                <div id="modelDetails" class="text-sm text-slate-700 dark:text-slate-200">
+                    Loading...
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="/static/ollamaco2.js"></script>
+</body>
+
+</html>

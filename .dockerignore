@@ -1,0 +1,37 @@
+# Git
+.git/
+.gitignore
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.Python
+venv/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker files
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Documentation
+README.md
+
+# Logs
+*.log
+
+# Tailwind Build Artifacts
+tailwindcss-*-linux-x64
+input.css
+tailwind.config.js
